@@ -14,6 +14,8 @@ import { FlashMessagesModule } from 'angular2-flash-messages';
 import { EditStationComponent } from './components/edit-station/edit-station.component';
 import { AddStationComponent } from './components/add-station/add-station.component';
 import { StationCardComponent } from './components/station-card/station-card.component';
+import { ChartModule } from 'angular-highcharts';
+
 
 
 @NgModule({
@@ -35,8 +37,10 @@ import { StationCardComponent } from './components/station-card/station-card.com
     ReactiveFormsModule,
     FormsModule,
     FlashMessagesModule.forRoot(),
+    ChartModule 
   ],
   providers: [ApiService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
+
