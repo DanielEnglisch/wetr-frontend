@@ -1,0 +1,23 @@
+<h1 class="mb-3 mt-5">Login</h1>
+    
+<p style="color:red;margin-top:5px;" *ngIf="loginFailed && !loggingIn">Falsche Zugangsdaten!</p>
+
+    <form class="form-horizontal" [formGroup]="form">
+
+      <mat-form-field>
+          <input matInput type="email" placeholder="Email" formControlName="email">
+      </mat-form-field>
+      <br/>
+    
+      <mat-form-field>
+          <input matInput formControlName="password" placeholder="Password" type="password">
+      </mat-form-field>
+
+    <br/>
+     <button  (click)="onSubmit()" [disabled]="form.invalid || loggingIn" mat-raised-button color="primary" type="submit">Login</button>
+     <br/>
+     <mat-spinner class="mt-5" *ngIf="loggingIn"></mat-spinner>
+     
+
+    </form>
+
