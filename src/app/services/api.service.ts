@@ -67,6 +67,13 @@ export class ApiService {
     }
 
     
+    /* Sorting communities */
+
+    this.communities.sort(function(a, b){
+      if(a.Name < b.Name) { return -1; }
+      if(a.Name > b.Name) { return 1; }
+      return 0;
+    })
 
       console.log("Fetched static data!")
 
