@@ -13,6 +13,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FlashMessagesModule } from 'angular2-flash-messages';
 import { EditStationComponent } from './components/edit-station/edit-station.component';
 import { AddStationComponent } from './components/add-station/add-station.component';
+import { StationCardComponent } from './components/station-card/station-card.component';
 
 
 @NgModule({
@@ -22,6 +23,7 @@ import { AddStationComponent } from './components/add-station/add-station.compon
     HomeComponent,
     EditStationComponent,
     AddStationComponent,
+    StationCardComponent,
 
   ],
   imports: [

@@ -1,0 +1,42 @@
+<!-- Station Card -->
+<div class="container col-3 mb-5 mr-5 p-0"  style="min-width:200px !important;float:none;overflow:hidden;display:inline-block;border-radius: 0px 0px 0px 0px;
+-moz-border-radius: 0px 0px 0px 0px;
+-webkit-border-radius: 0px 0px 0px 0px;
+border: 1px solid #000000;">
+
+  <div class="col-12 mx-auto" style="text-align: center;color:white;background-color:gray;margin: 0 auto;">
+    {{ station.Name }}
+  </div>
+
+  <div class="container p-3">
+
+    <div class="row">
+      <div class="col-6 left"><i>Community:</i></div>
+      <div style="text-align: right;" class="col-6 right">{{ api.resolveCommunity(station.CommunityId) }}</div>
+    </div>
+  
+    <div class="row">
+      <div class="col-6 left"><i>Type:</i></div>
+      <div style="text-align: right;" class="col-6 right">{{ api.revolveStationType(station.StationTypeId) }}</div>
+    </div>
+  
+   
+
+  </div>
+
+  <div class="row col-12 centered p-0 m-0">
+  
+    <a class="btn col-4" [routerLink]="['/edit', station.StationId]">
+      <i class="fa fa-edit"></i>
+    </a>
+
+    <a class="btn col-4" [routerLink]="['/query', station.StationId]">
+      <i class="fa fa-info-circle "></i>
+    </a>
+
+    <button (click)="deleteStation(station.StationId)" class="btn col-4"><i class="fa fa-trash"></i></button>
+
+  </div>
+  
+</div>
+<!-- End Station Card -->

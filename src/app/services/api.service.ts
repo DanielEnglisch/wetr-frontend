@@ -40,7 +40,9 @@ export class ApiService {
       this.router.navigate(['/login'])
       return;
     }else{
-      this.loadStaticData()
+      this.loadStaticData().then(() => {
+        router.navigate([router.url])
+      })
     }
 
   }
@@ -88,7 +90,6 @@ export class ApiService {
   }
 
   public resolveCommunity(id : number) {
-
     return this.communities.find(t => t.CommunityId == id).Name
   }
 

@@ -10,43 +10,16 @@
 
 </div>
 
-<style>
-  div {
-    padding: 0;
-    margin: 0;
-  }
-</style>
 
 
-<div class="wrapper row">
+
+<div class="container col-12 left" style="">
 
     <mat-spinner class="mt-5" *ngIf=" !stations "></mat-spinner>
     <p *ngIf="stations?.length == 0">You don't have any station!</p>
 
   <!-- Station Card -->
-  <div class="col-3 mb-5 mr-5 p-0" *ngFor="let s of stations" style="border-radius: 0px 0px 0px 0px;
-  -moz-border-radius: 0px 0px 0px 0px;
-  -webkit-border-radius: 0px 0px 0px 0px;
-  border: 1px solid #000000;">
-
-    <div class="col-12" style="text-align: center;color:white;background-color:gray">
-      {{ s.Name }}
-    </div>
-
-
-    <div style="text-align: center;" class="col-12 right"><i>Community:</i> {{ api.resolveCommunity(s.CommunityId) }}
-    </div>
-
-    <div class="row col-12 centered p-0 m-0">
-
-      <a class="btn col-6" [routerLink]="['/edit', s.StationId]">
-        <i class="fa fa-edit"></i>
-      </a>
-
-      <button (click)="deleteStation(s.StationId)" class="btn col-6"><i class="fa fa-trash"></i></button>
-
-    </div>
-  </div>
-
+  <wetr-station-card *ngFor="let station of stations" [station]="station" (refreshRequired)="refreshStations()"></wetr-station-card>
+  <!-- End Station Card -->
 
 </div>
