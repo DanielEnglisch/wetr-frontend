@@ -1,3 +1,102 @@
-<p>
-  query-page works!
-</p>
+<h1 class="mb-3 mt-5">Query Station "{{ station.Name }}" in {{ api.resolveCommunity(station.CommunityId) }}</h1>
+
+<div class="wrapper row">
+
+  <div class="col-12" *ngIf="errors?.length > 0">
+    Errors:
+    <ul>
+      <li style="color:red;" *ngFor="let e of errors">{{e}} </li>
+    </ul>
+
+  </div>
+
+
+  <form *ngIf="form" class="form-horizontal col-12 mb-5 mt-3" [formGroup]="form">
+
+    <mat-form-field class="col-2">
+      <input matInput required [matDatepicker]="picker1" placeholder="Start date" formControlName="start">
+      <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+      <mat-datepicker #picker1></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field class="col-2">
+      <input matInput required [matDatepicker]="picker2" placeholder="End date" formControlName="end">
+      <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+      <mat-datepicker #picker2></mat-datepicker>
+    </mat-form-field>
+    <br />
+
+    <mat-form-field class="col-4">
+      <mat-select required placeholder="Type" formControlName="measurementType">
+        <mat-option *ngFor="let c of measurementTypes" [value]="c.MeasurementTypeId">
+          {{c.Name}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <br />
+
+    <mat-form-field class="col-4">
+      <mat-select required placeholder="Reduction Type" formControlName="reductionType">
+        <mat-option *ngFor="let t of reductionTypes" [value]="t.key">
+          {{t.value}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <br />
+
+    <mat-form-field class="col-4">
+      <mat-select required placeholder="Grouping Type" formControlName="groupingType">
+        <mat-option *ngFor="let t of groupingTypes" [value]="t.key">
+          {{t.value}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <br />
+
+
+    <button class="ml-3" (click)="onSubmit()" [disabled]="form.invalid || querrying" mat-raised-button color="primary"
+      type="submit">Send
+      Query</button>
+    <br />
+    <mat-spinner class="mt-5" *ngIf="querrying || !form"></mat-spinner>
+
+
+  </form>
+
+  <h4 *ngIf="noResults">There are no results for this query.</h4>
+  <h1 class="mb-3 mt-5 col-12" *ngIf="chart">Query results:</h1>
+
+
+  <div class="container row col-12" *ngIf="chart">
+
+    <h3 class="col-12" *ngIf="chart">Chart:</h3>
+    <div class="col-12" [chart]="chart"></div>
+
+    <h3 class="col-12">Table:</h3>
+    <div class="col-12" style="overflow:scroll;max-height:50%">
+
+      <table style="width:100%;" mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+
+        <ng-container matColumnDef="time">
+          <th mat-header-cell *matHeaderCellDef> Time </th>
+          <td mat-cell *matCellDef="let element"> {{element.time}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="value">
+          <th mat-header-cell *matHeaderCellDef> Value </th>
+          <td mat-cell *matCellDef="let element"> {{element.value}} </td>
+        </ng-container>
+
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+
+
+
+    </div>
+
+
+  </div>
+
+</div>

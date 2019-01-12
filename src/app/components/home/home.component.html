@@ -13,7 +13,7 @@
 
 
 
-<div class="container col-12 left" style="">
+<div class="container col-12 left">
 
   <mat-spinner class="mt-5" *ngIf=" !stations "></mat-spinner>
   <p *ngIf="stations?.length == 0">You don't have any station!</p>
@@ -21,11 +21,5 @@
   <!-- Station Card -->
   <wetr-station-card *ngFor="let station of stations" [station]="station" (refreshRequired)="refreshStations()"></wetr-station-card>
   <!-- End Station Card -->
-
-</div>
-
-<div class="container">
-
-  <div [chart]="chart"></div>
 
 </div>

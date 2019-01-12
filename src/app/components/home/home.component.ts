@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Station } from 'src/app/services/DTOs/station';
 import { ApiService } from 'src/app/services/api.service';
 import { FlashMessagesService } from 'angular2-flash-messages';
-import { Chart } from 'angular-highcharts';
+
 
 @Component({
   selector: 'wetr-home',
@@ -21,23 +21,6 @@ export class HomeComponent implements OnInit {
 
   values: number[] = [1, 2, 3];
 
-  chart = new Chart({
-    chart: {
-      type: 'line'
-    },
-    title: {
-      text: 'Linechart'
-    },
-    credits: {
-      enabled: false
-    },
-    series: [
-      {
-        name: 'Line 1',
-        data: [1, 2, 3]
-      }
-    ]
-  });
 
   async refreshStations(){
     this.stations = await this.api.getMyStations()

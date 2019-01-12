@@ -9,6 +9,9 @@ import { Country } from './DTOs/country';
 import { District } from './DTOs/district';
 import { Community } from './DTOs/community';
 import { Province } from './DTOs/province';
+import { MeasurementType } from './DTOs/measurementType';
+import { QueryRequest } from './requests/query.request';
+
 
 const apiString : string = "http://localhost:5000/v1"
 
@@ -23,11 +26,12 @@ export class ApiService {
   private staticDataLoaded : boolean = false
 
   /* Static data: */
-  public stationTypes : Array<StationType>
-  public countries : Array<Country>
-  public districts : Array<District>
-  public communities : Array<Community>
-  public provinces : Array<Province>
+  stationTypes : Array<StationType>
+  countries : Array<Country>
+  districts : Array<District>
+  communities : Array<Community>
+  provinces : Array<Province>
+  measurementTypes : Array<MeasurementType>
 
 
   constructor(private http: HttpClient,  private router: Router){
@@ -62,6 +66,7 @@ export class ApiService {
         this.provinces = <Array<Province>> await this.JwtGet(apiString + "/data/provinces")
         this.districts = <Array<District>> await this.JwtGet(apiString + "/data/districts")
         this.communities = <Array<Community>> await this.JwtGet(apiString + "/data/communities")
+        this.measurementTypes = <Array<MeasurementType>> await this.JwtGet(apiString + "/data/measurementtypes")
     } catch (error) {
       this.router.navigate(['/login'])
     }
@@ -107,6 +112,12 @@ export class ApiService {
   public  getStationTypes() {
     return this.stationTypes
   }
+
+  public  getMeasurementTypes() {
+    return this.measurementTypes
+  }
+
+  
 
 
   public async login(request: LoginRequest ){
@@ -252,6 +263,21 @@ export class ApiService {
 
   }
 
+  public async queryStation(query : QueryRequest){
+
+    let response
+    try {
+      response = await this.JwtPost(apiString + "/measurements/query", query)
+
+    } catch (error) {
+      return error.error
+
+    }
+
+      return <Array<number>>response.body
+
+  }
+
   public async deleteStation(id :number){
 
     let status 
@@ -289,6 +315,8 @@ export class ApiService {
     return  <Array<Station>>response
 
   }
+
+
 
   
   public async getStationsForCommunity(communityId : number){
