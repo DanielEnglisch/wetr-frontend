@@ -1,3 +1,30 @@
-<p>
-  search-page works!
-</p>
+<div class="container col-12">
+
+  <h1 class="mt-5 mb-5">Search stations:</h1>
+
+  <form *ngIf="form" [formGroup]="form">
+    <mat-form-field class="col-12">
+      <input type="text" #com (keydown.enter)="searchForStations(com.value)" placeholder="Community" matInput
+        formControlName="community" [matAutocomplete]="auto">
+      <mat-autocomplete #auto="matAutocomplete">
+        <mat-option *ngFor="let community of filteredCommunities | async" [value]="community.Name">
+          {{community.Name}}
+        </mat-option>
+      </mat-autocomplete>
+    </mat-form-field>
+  </form>
+
+
+  <h4 class="mt-5 mb-5">Stations:</h4>
+
+  <div class="container col-12">
+
+    <mat-spinner class="mt-5" *ngIf="loading"></mat-spinner>
+    <p *ngIf="stations?.length == 0 && !loading">There are no stations.</p>
+    <wetr-station-card [detailsOnly]="true" *ngFor="let station of stations" [station]="station"></wetr-station-card>
+
+
+  </div>
+
+
+</div>

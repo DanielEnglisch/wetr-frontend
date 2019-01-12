@@ -277,11 +277,25 @@ export class ApiService {
     return  <Station>response
   }
 
-  public async getStations(){
+  public async getMyStations(){
 
     let response;
     try {
       response = <Array<Station>>await this.JwtGet(apiString + "/stations/my")
+    } catch (error) {
+      this.router.navigate(['/login'])
+      return []
+    }
+    return  <Array<Station>>response
+
+  }
+
+  
+  public async getStationsForCommunity(communityId : number){
+
+    let response;
+    try {
+      response = <Array<Station>>await this.JwtGet(apiString + "/stations/community/" + communityId)
     } catch (error) {
       this.router.navigate(['/login'])
       return []

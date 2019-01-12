@@ -40,7 +40,7 @@ export class HomeComponent implements OnInit {
   });
 
   async refreshStations(){
-    this.stations = await this.api.getStations()
+    this.stations = await this.api.getMyStations()
   }
   
 

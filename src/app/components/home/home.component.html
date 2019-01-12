@@ -1,11 +1,11 @@
 <div class="row col-12 mb-5 mt-5">
   <div class="div col-10">
-      <h1 class="">My stations </h1>
+    <h1 class="">My stations </h1>
 
   </div>
-    <a  class="btn col-1" [routerLink]="['/add']">
-      <i style="background-color:green;color:white;" class="fa fa-plus p-2"></i>
-    </a>
+  <a class="btn col-1" [routerLink]="['/add']">
+    <i style="background-color:green;color:white;" class="fa fa-plus p-2"></i>
+  </a>
 
 
 </div>
@@ -15,8 +15,8 @@
 
 <div class="container col-12 left" style="">
 
-    <mat-spinner class="mt-5" *ngIf=" !stations "></mat-spinner>
-    <p *ngIf="stations?.length == 0">You don't have any station!</p>
+  <mat-spinner class="mt-5" *ngIf=" !stations "></mat-spinner>
+  <p *ngIf="stations?.length == 0">You don't have any station!</p>
 
   <!-- Station Card -->
   <wetr-station-card *ngFor="let station of stations" [station]="station" (refreshRequired)="refreshStations()"></wetr-station-card>
@@ -26,6 +26,6 @@
 
 <div class="container">
 
-    <div [chart]="chart"></div>
-   
+  <div [chart]="chart"></div>
+
 </div>

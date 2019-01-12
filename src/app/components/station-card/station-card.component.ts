@@ -11,6 +11,7 @@ import { FlashMessagesService } from 'angular2-flash-messages';
 export class StationCardComponent implements OnInit {
 
   @Input("station") station : Station
+  @Input("detailsOnly") detailsOnly : boolean
   @Output() refreshRequired = new EventEmitter<boolean>();
 
   constructor(private api : ApiService, private flash : FlashMessagesService) { }
@@ -27,7 +28,7 @@ export class StationCardComponent implements OnInit {
       this.refreshRequired.emit(true)
 
     }else{
-      this.flash.show("Only stations without associated measurements can be deleted!",  { cssClass: 'alert-danger', timeout: 2000 })
+      this.flash.show("Only own stations without associated measurements can be deleted!",  { cssClass: 'alert-danger', timeout: 2000 })
     }
   }
 
