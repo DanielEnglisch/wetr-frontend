@@ -15,6 +15,9 @@ import { EditStationComponent } from './components/edit-station/edit-station.com
 import { AddStationComponent } from './components/add-station/add-station.component';
 import { StationCardComponent } from './components/station-card/station-card.component';
 import { ChartModule } from 'angular-highcharts';
+import { SearchPageComponent } from './components/search-page/search-page.component';
+import { QueryPageComponent } from './components/query-page/query-page.component';
+import { DashboardPageComponent } from './components/dashboard-page/dashboard-page.component';
 
 
 
@@ -26,6 +29,9 @@ import { ChartModule } from 'angular-highcharts';
     EditStationComponent,
     AddStationComponent,
     StationCardComponent,
+    SearchPageComponent,
+    QueryPageComponent,
+    DashboardPageComponent,
 
   ],
   imports: [
