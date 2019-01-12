@@ -1,4 +1,4 @@
-<h1 class="mb-3 mt-5">Query Station "{{ station.Name }}" in {{ api.resolveCommunity(station.CommunityId) }}</h1>
+<h1 class="mb-3 mt-5">Query Station "{{ station.Name }}" in {{ communityName }}</h1>
 
 <div class="wrapper row">
 
@@ -37,7 +37,7 @@
 
     <mat-form-field class="col-4">
       <mat-select required placeholder="Reduction Type" formControlName="reductionType">
-        <mat-option *ngFor="let t of reductionTypes" [value]="t.key">
+        <mat-option *ngFor="let t of api.reductionTypes" [value]="t.key">
           {{t.value}}
         </mat-option>
       </mat-select>
@@ -46,7 +46,7 @@
 
     <mat-form-field class="col-4">
       <mat-select required placeholder="Grouping Type" formControlName="groupingType">
-        <mat-option *ngFor="let t of groupingTypes" [value]="t.key">
+        <mat-option *ngFor="let t of api.groupingTypes" [value]="t.key">
           {{t.value}}
         </mat-option>
       </mat-select>
@@ -57,6 +57,8 @@
     <button class="ml-3" (click)="onSubmit()" [disabled]="form.invalid || querrying" mat-raised-button color="primary"
       type="submit">Send
       Query</button>
+      <button class="ml-3" (click)="addToDashboard()" [disabled]="form.invalid || querrying" mat-raised-button color="primary"
+      type="submit">Add to dashboard</button>
     <br />
     <mat-spinner class="mt-5" *ngIf="querrying || !form"></mat-spinner>
 

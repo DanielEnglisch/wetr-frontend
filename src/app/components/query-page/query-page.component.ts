@@ -20,22 +20,7 @@ export class QueryPageComponent implements OnInit {
 
   querrying : boolean = false
 
-  reductionTypes = [
-    {key: 0, value:"Average"},
-    {key: 1, value:"Minimum"},
-    {key: 2, value:"Maximum"},
-    {key: 3, value:"Sum"},
-  ]
-
-  groupingTypes = [
-    {key: 4, value:"Hour"},
-    {key: 0, value:"Day"},
-    {key: 1, value:"Week"},
-    {key: 2, value:"Month"},
-    {key: 3, value:"Year"},
-
-  ]
-
+  
   noResults : boolean = false
   chart : Chart = null
   displayedColumns: string[] = ['time', 'value'];
@@ -56,6 +41,7 @@ export class QueryPageComponent implements OnInit {
     this.id = routeParams.id;
     this.station = await this.api.getStation(this.id)
     this.measurementTypes = await this.api.getMeasurementTypes()
+    this.communityName = await this.api.resolveCommunity(this.station.CommunityId)
 
     let today : Date = new Date()
     let lastWeek = new Date()
@@ -78,6 +64,44 @@ export class QueryPageComponent implements OnInit {
 
   }
 
+  communityName : string  = "?"
+
+  async addToDashboard(){
+
+    let data : QueryRequest = {
+      MeasurementTypeId: +this.form.get("measurementType").value,
+      GroupingTypeId: +this.form.get("groupingType").value,
+      ReductionTypeId: +this.form.get("reductionType").value,
+      Start: this.form.get("start").value,
+      End: this.form.get("end").value,
+      StationId: this.station.StationId
+    }
+
+    if(data.Start > data.End){
+
+      this.flash.show("Starting date has to be before the ending date!",  { cssClass: 'alert-danger', timeout: 4000 })
+      this.querrying = false
+      return
+    }
+
+    var d = new Date()
+    var isToday = (d.toDateString() === data.End.toDateString());
+
+
+    if(!isToday){
+
+      this.flash.show("Only queries that end today can be added to the dashboard!",  { cssClass: 'alert-danger', timeout: 4000 })
+
+      return
+    }
+
+    this.api.addQueryToDashboard(data)
+
+    this.flash.show("Successfully added query to dashboard!",  { cssClass: 'alert-success', timeout: 4000 })
+
+  
+  }
+
   async onSubmit () {
 
     this.querrying = true
@@ -91,9 +115,17 @@ export class QueryPageComponent implements OnInit {
       StationId: this.station.StationId
     }
   
+    if(data.Start > data.End){
+
+      this.flash.show("Starting date has to be before the ending date!",  { cssClass: 'alert-danger', timeout: 4000 })
+      this.querrying = false
+      return
+    }
+
+
     let response =<Array<number>> await this.api.queryStation(data)
 
-    let groupingText =  this.groupingTypes.find(g => g.key == data.GroupingTypeId).value
+    let groupingText =  this.api.groupingTypes.find(g => g.key == data.GroupingTypeId).value
 
     if(response.length > 0){
       this.chart = new Chart({

@@ -13,150 +13,194 @@ import { MeasurementType } from './DTOs/measurementType';
 import { QueryRequest } from './requests/query.request';
 
 
-const apiString : string = "http://localhost:5000/v1"
+const apiString: string = "http://localhost:5000/v1"
 
 @Injectable({
   providedIn: 'root'
 })
 
 
+
 export class ApiService {
 
-  private token : string = null
-  private staticDataLoaded : boolean = false
+  private staticDataLoaded: boolean = false
 
   /* Static data: */
-  stationTypes : Array<StationType>
-  countries : Array<Country>
-  districts : Array<District>
-  communities : Array<Community>
-  provinces : Array<Province>
-  measurementTypes : Array<MeasurementType>
+  stationTypes: Array<StationType>
+  communities: Array<Community>
+  measurementTypes: Array<MeasurementType>
 
 
-  constructor(private http: HttpClient,  private router: Router){
 
-    /* Load token from localStorage */
-    this.token = localStorage.getItem("token");
+  public reductionTypes: Array<KVPair> = [
+    { key: 0, value: "Average" },
+    { key: 1, value: "Minimum" },
+    { key: 2, value: "Maximum" },
+    { key: 3, value: "Sum" },
+  ]
 
-    if(this.token == null){
+  public groupingTypes: Array<KVPair> = [
+    { key: 4, value: "Hour" },
+    { key: 0, value: "Day" },
+    { key: 1, value: "Week" },
+    { key: 2, value: "Month" },
+    { key: 3, value: "Year" },
+
+  ]
+
+
+  localStorageData: WetrLocalStorageData
+
+  constructor(private http: HttpClient, private router: Router) {
+
+    /* Create if not exists */
+    if (localStorage.getItem("wetr") == undefined) {
+      localStorage.setItem("wetr", JSON.stringify({
+        email: undefined,
+        token: undefined,
+        queries: []
+      }))
+      console.log("LocalStorage data has been initialized for the first time!")
+    }
+
+    this.localStorageData = JSON.parse(localStorage.getItem("wetr"))
+
+
+    if (this.localStorageData.token == null) {
       console.log("No token found! Requesting login.")
       this.router.navigate(['/login'])
       return;
-    }else{
-      this.loadStaticData().then(() => {
-        router.navigate([router.url])
-      })
+    } else {
+
+
     }
 
   }
 
-  private async loadStaticData(){
+  private async loadStaticData() {
 
-    if(this.staticDataLoaded){
+    if (this.staticDataLoaded) {
       return;
     }
 
-    this.staticDataLoaded = true
 
     try {
-        /* Load Data */
-        this.stationTypes = <Array<StationType>> await this.JwtGet(apiString + "/data/stationtypes")
-        this.countries = <Array<Country>> await this.JwtGet(apiString + "/data/countries")
-        this.provinces = <Array<Province>> await this.JwtGet(apiString + "/data/provinces")
-        this.districts = <Array<District>> await this.JwtGet(apiString + "/data/districts")
-        this.communities = <Array<Community>> await this.JwtGet(apiString + "/data/communities")
-        this.measurementTypes = <Array<MeasurementType>> await this.JwtGet(apiString + "/data/measurementtypes")
+      /* Load Data */
+      this.stationTypes = <Array<StationType>>await this.JwtGet(apiString + "/data/stationtypes")
+      this.communities = <Array<Community>>await this.JwtGet(apiString + "/data/communities")
+      this.measurementTypes = <Array<MeasurementType>>await this.JwtGet(apiString + "/data/measurementtypes")
     } catch (error) {
       this.router.navigate(['/login'])
     }
 
-    
+
     /* Sorting communities */
 
-    this.communities.sort(function(a, b){
-      if(a.Name < b.Name) { return -1; }
-      if(a.Name > b.Name) { return 1; }
+    this.communities.sort(function (a, b) {
+      if (a.Name < b.Name) { return -1; }
+      if (a.Name > b.Name) { return 1; }
       return 0;
     })
 
-      console.log("Fetched static data!")
+    console.log("Fetched static data!")
 
+    this.staticDataLoaded = true
 
   }
 
-  public  revolveStationType(id : number) {
-    return  this.stationTypes.find(t => t.StationTypeId == id).Name
+  public async revolveStationType(id: number) {
+    await this.loadStaticData()
+    return this.stationTypes.find(t => t.StationTypeId == id).Name
   }
 
-  public  resolveCountry(id : number) {
-    return  this.countries.find(t => t.CountryId == id).Name
-  }
-
-  public  resolveProvince(id : number) {
-    return  this.provinces.find(t => t.ProvinceId == id).Name
-  }
-
-  public  resolveDistrict(id : number) {
-    return  this.districts.find(t => t.DistrictId == id).Name
-  }
-
-  public resolveCommunity(id : number) {
+  public async resolveCommunity(id: number) {
+    await this.loadStaticData()
     return this.communities.find(t => t.CommunityId == id).Name
   }
 
-  public  getCommunities() {
+  public async getCommunities() {
+    await this.loadStaticData()
     return this.communities
   }
 
-  public  getStationTypes() {
+  public async getStationTypes() {
+    await this.loadStaticData()
     return this.stationTypes
   }
 
-  public  getMeasurementTypes() {
+  public async getMeasurementTypes() {
+    await this.loadStaticData()
     return this.measurementTypes
   }
 
-  
 
 
-  public async login(request: LoginRequest ){
-  
-    let response : HttpResponse<object>
 
-    try {
-      response = await this.http.post(apiString + "/auth/",request,{observe: 'response'}).toPromise()
-    } catch (error) {
-        return false
+
+
+  public addQueryToDashboard(query: QueryRequest) {
+    this.localStorageData.queries.push(query)
+    this.saveLocalStorage()
+  }
+
+  public getDashboardQueries() {
+    return this.localStorageData.queries
+  }
+
+  public removeQueryToDashboard(query: QueryRequest) {
+
+    const index = this.localStorageData.queries.indexOf(query, 0);
+    if (index > -1) {
+      this.localStorageData.queries.splice(index, 1);
     }
 
-    let payload = <TokenResponse> response.body
-    this.token = payload.Token
-    localStorage.setItem("token", this.token)
+    this.saveLocalStorage()
+  }
+
+  public saveLocalStorage() {
+    localStorage.setItem("wetr", JSON.stringify(this.localStorageData))
+  }
+
+  public async login(request: LoginRequest) {
+
+    let response: HttpResponse<object>
+
+    try {
+      response = await this.http.post(apiString + "/auth/", request, { observe: 'response' }).toPromise()
+    } catch (error) {
+      return false
+    }
+
+    let payload = <TokenResponse>response.body
+    this.localStorageData.token = payload.Token
+    this.localStorageData.email = request.Email
+
+    this.saveLocalStorage()
+
 
     /* Load data in login */
     await this.loadStaticData()
 
     return true
-    
+
   }
 
   /***
    * Auto Authorizing PUT request
    */
-  private async JwtPut(url:string, body : any){
+  private async JwtPut(url: string, body: any) {
 
     /* If there is no token, login */
-    if(this.token == null){
+    if (this.localStorageData.token == null) {
       this.router.navigate(['/login'])
       throw new Error();
     }
 
     let headers = new HttpHeaders();
-    headers = headers.append("Authorization", this.token);
-    let response = await this.http.put(url,  body, {headers: headers, observe: 'response'}).toPromise();
+    headers = headers.append("Authorization", this.localStorageData.token);
+    let response = await this.http.put(url, body, { headers: headers, observe: 'response' }).toPromise();
 
-    if(response.status == 401){
+    if (response.status == 401) {
       this.router.navigate(['/login'])
     }
 
@@ -164,22 +208,22 @@ export class ApiService {
 
   }
 
-    /***
-   * Auto Authorizing POST request
-   */
-  private async JwtPost(url:string, body : any){
+  /***
+ * Auto Authorizing POST request
+ */
+  private async JwtPost(url: string, body: any) {
 
     /* If there is no token, login */
-    if(this.token == null){
+    if (this.localStorageData.token == null) {
       this.router.navigate(['/login'])
       throw new Error();
     }
 
     let headers = new HttpHeaders();
-    headers = headers.append("Authorization", this.token);
-    let response = await this.http.post(url,  body, {headers: headers, observe: 'response'}).toPromise();
+    headers = headers.append("Authorization", this.localStorageData.token);
+    let response = await this.http.post(url, body, { headers: headers, observe: 'response' }).toPromise();
 
-    if(response.status == 401){
+    if (response.status == 401) {
       this.router.navigate(['/login'])
     }
 
@@ -190,19 +234,19 @@ export class ApiService {
   /***
    * Auto Authorizing GET request
    */
-  private async JwtGet(url:string){
+  private async JwtGet(url: string) {
 
     /* If there is no token, login */
-    if(this.token == null){
+    if (this.localStorageData.token == null) {
       this.router.navigate(['/login'])
       throw new Error();
     }
 
     let headers = new HttpHeaders();
-    headers = headers.append("Authorization", this.token);
-    let response = await this.http.get(url,  {headers: headers, observe: 'response'}).toPromise();
+    headers = headers.append("Authorization", this.localStorageData.token);
+    let response = await this.http.get(url, { headers: headers, observe: 'response' }).toPromise();
 
-    if(response.status == 401){
+    if (response.status == 401) {
       this.router.navigate(['/login'])
       throw new Error();
     }
@@ -214,19 +258,19 @@ export class ApiService {
   /***
    * Auto Authorizing DELETE request
    */
-  private async JwtDelete(url:string){
+  private async JwtDelete(url: string) {
 
     /* If there is no token, login */
-    if(this.token == null){
+    if (this.localStorageData.token == null) {
       this.router.navigate(['/login'])
       throw new Error();
     }
 
     let headers = new HttpHeaders();
-    headers = headers.append("Authorization", this.token);
-    let response = await this.http.delete(url,  {headers: headers, observe: 'response'}).toPromise();
+    headers = headers.append("Authorization", this.localStorageData.token);
+    let response = await this.http.delete(url, { headers: headers, observe: 'response' }).toPromise();
 
-    if(response.status == 401){
+    if (response.status == 401) {
       this.router.navigate(['/login'])
     }
 
@@ -234,7 +278,7 @@ export class ApiService {
 
   }
 
-  public async editStatoin(station : Station){
+  public async editStatoin(station: Station) {
     let response
     try {
       response = await this.JwtPut(apiString + "/stations", station)
@@ -244,12 +288,12 @@ export class ApiService {
 
     }
 
-      return true
+    return true
 
   }
 
 
-  public async addStation(station : Station){
+  public async addStation(station: Station) {
     let response
     try {
       response = await this.JwtPost(apiString + "/stations", station)
@@ -259,11 +303,11 @@ export class ApiService {
 
     }
 
-      return true
+    return true
 
   }
 
-  public async queryStation(query : QueryRequest){
+  public async queryStation(query: QueryRequest) {
 
     let response
     try {
@@ -274,17 +318,17 @@ export class ApiService {
 
     }
 
-      return <Array<number>>response.body
+    return <Array<number>>response.body
 
   }
 
-  public async deleteStation(id :number){
+  public async deleteStation(id: number) {
 
-    let status 
+    let status
     try {
-      status =  await this.JwtDelete(apiString + "/stations/"+id)
+      status = await this.JwtDelete(apiString + "/stations/" + id)
     } catch (error) {
-      
+
     }
 
     return status == 200
@@ -292,7 +336,7 @@ export class ApiService {
 
   }
 
-  public async getStation(id : number){
+  public async getStation(id: number) {
     let response;
     try {
       response = <Station>await this.JwtGet(apiString + "/stations/" + id)
@@ -300,10 +344,10 @@ export class ApiService {
       this.router.navigate(['/login'])
       return null
     }
-    return  <Station>response
+    return <Station>response
   }
 
-  public async getMyStations(){
+  public async getMyStations() {
 
     let response;
     try {
@@ -312,14 +356,14 @@ export class ApiService {
       this.router.navigate(['/login'])
       return []
     }
-    return  <Array<Station>>response
+    return <Array<Station>>response
 
   }
 
 
 
-  
-  public async getStationsForCommunity(communityId : number){
+
+  public async getStationsForCommunity(communityId: number) {
 
     let response;
     try {
@@ -328,8 +372,22 @@ export class ApiService {
       this.router.navigate(['/login'])
       return []
     }
-    return  <Array<Station>>response
+    return <Array<Station>>response
 
   }
+
+}
+
+export interface KVPair {
+  key: number
+  value: string
+}
+
+
+export interface WetrLocalStorageData {
+
+  email: string
+  token: string
+  queries: Array<QueryRequest>
 
 }

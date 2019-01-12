@@ -1,4 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { QueryRequest } from 'src/app/services/requests/query.request';
+import { ApiService } from 'src/app/services/api.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'wetr-dashboard-page',
@@ -7,9 +10,16 @@ import { Component, OnInit } from '@angular/core';
 })
 export class DashboardPageComponent implements OnInit {
 
-  constructor() { }
+  queries: Array<QueryRequest> = []
 
-  ngOnInit() {
+  constructor(private api : ApiService, private router : Router) { }
+
+  async refreshDashboard(){
+    this.queries = await this.api.getDashboardQueries()
   }
 
+  async ngOnInit() {
+    this.queries = await this.api.getDashboardQueries()
+  }
+   
 }

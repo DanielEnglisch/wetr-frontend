@@ -18,6 +18,7 @@ import { ChartModule } from 'angular-highcharts';
 import { SearchPageComponent } from './components/search-page/search-page.component';
 import { QueryPageComponent } from './components/query-page/query-page.component';
 import { DashboardPageComponent } from './components/dashboard-page/dashboard-page.component';
+import { DashboardCardComponent } from './components/dashboard-card/dashboard-card.component';
 
 
 
@@ -32,6 +33,7 @@ import { DashboardPageComponent } from './components/dashboard-page/dashboard-pa
     SearchPageComponent,
     QueryPageComponent,
     DashboardPageComponent,
+    DashboardCardComponent,
 
   ],
   imports: [

@@ -1,3 +1,17 @@
-<p>
-  dashboard-page works!
-</p>
+<div class="row col-12 mb-5 mt-5">
+  <div class="div col-10">
+    <h1 class="">Dashboard</h1>
+
+  </div>
+ 
+
+</div>
+
+
+<div class="container col-12 left">
+
+    <p *ngIf="queries?.length == 0 ">You haven't added any queries to the dashboard!</p>
+
+  <wetr-dashboard-card (refreshRequired)="refreshDashboard()" *ngFor="let q of queries" [query]="q"></wetr-dashboard-card>
+
+</div>

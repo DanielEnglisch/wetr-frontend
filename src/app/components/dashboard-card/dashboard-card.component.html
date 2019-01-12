@@ -1,0 +1,15 @@
+<div class="col-10 m-3 row container">
+
+  <mat-spinner class="mt-5" *ngIf="isLoading"></mat-spinner>
+
+  <div class="row col-12">
+    <div class="col-10 left"><b>Station:</b> {{ station.Name }}</div>
+    <button style="color:red;" class="btn col-2 text-right pr-0" (click)="deleteQuery()"><i class="fa fa-lg fa-trash"></i></button>
+
+  </div>
+  <div class="col-12 mb-4">{{ description }}</div>
+
+
+  <div class="col-12" [chart]="chart"></div>
+
+</div>

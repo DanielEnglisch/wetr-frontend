@@ -12,11 +12,17 @@ export class StationCardComponent implements OnInit {
 
   @Input("station") station : Station
   @Input("detailsOnly") detailsOnly : boolean
-  @Output() refreshRequired = new EventEmitter<boolean>();
+  @Output() refreshRequired = new EventEmitter<void>();
 
   constructor(private api : ApiService, private flash : FlashMessagesService) { }
 
-  ngOnInit() {
+  stationTypeName : string = "?"
+  communityName : string = "?"
+
+  async ngOnInit() {
+    this.communityName = await this.api.resolveCommunity(this.station.CommunityId)
+    this.stationTypeName = await this.api.revolveStationType(this.station.StationTypeId)
+
   }
 
   async deleteStation(id : number){
@@ -25,7 +31,7 @@ export class StationCardComponent implements OnInit {
       this.flash.show("Deletion successful.",  { cssClass: 'alert-success', timeout: 2000 })
 
       /* Reload stations */
-      this.refreshRequired.emit(true)
+      this.refreshRequired.emit()
 
     }else{
       this.flash.show("Only own stations without associated measurements can be deleted!",  { cssClass: 'alert-danger', timeout: 2000 })
