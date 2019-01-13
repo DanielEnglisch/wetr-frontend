@@ -5,10 +5,7 @@ import { LoginRequest } from './requests/login.request';
 import { TokenResponse } from './responses/token.response';
 import { Station } from './DTOs/station';
 import { StationType } from './DTOs/stationtype';
-import { Country } from './DTOs/country';
-import { District } from './DTOs/district';
 import { Community } from './DTOs/community';
-import { Province } from './DTOs/province';
 import { MeasurementType } from './DTOs/measurementType';
 import { QueryRequest } from './requests/query.request';
 
@@ -19,8 +16,6 @@ const apiString: string = "http://localhost:5000/v1"
   providedIn: 'root'
 })
 
-
-
 export class ApiService {
 
   private staticDataLoaded: boolean = false
@@ -29,8 +24,6 @@ export class ApiService {
   stationTypes: Array<StationType>
   communities: Array<Community>
   measurementTypes: Array<MeasurementType>
-
-
 
   public reductionTypes: Array<KVPair> = [
     { key: 0, value: "Average" },
@@ -124,11 +117,11 @@ export class ApiService {
     return this.measurementTypes
   }
 
-  public loggedIn() : boolean{
+  public loggedIn(): boolean {
     return this.localStorageData.token != null
-  } 
+  }
 
-  public logout(){
+  public logout() {
     this.localStorageData.token = null
     this.localStorageData.email = null
     this.saveLocalStorage()
@@ -137,43 +130,45 @@ export class ApiService {
 
 
   public addQueryToDashboard(query: QueryRequest) {
-    
+
     /* If there is no query entry */
     let entry = this.localStorageData.queries.find(pair => pair.key == this.localStorageData.email)
-    if(entry == undefined){
+    if (entry == undefined) {
       this.localStorageData.queries.push({
         key: this.localStorageData.email,
         value: [query]
       })
-    }else{
-      entry.value.push(query)
+    } else {
+        entry.value.push(query)
     }
 
     this.saveLocalStorage()
   }
 
+ 
+
   public getDashboardQueries() {
 
     /* Only logged in users can view dashboard */
-    if(this.localStorageData.token == null){
+    if (this.localStorageData.token == null) {
       this.router.navigate(["/login"])
       return []
     }
 
     let pair = this.localStorageData.queries.find(pair => pair.key == this.localStorageData.email)
-    if(pair == undefined)
+    if (pair == undefined)
       return []
     return pair.value
   }
 
   public removeQueryToDashboard(query: QueryRequest) {
     let pair = this.localStorageData.queries.find(pair => pair.key == this.localStorageData.email)
-    if(pair == undefined)
+    if (pair == undefined)
       return
-    
+
     const index = pair.value.indexOf(query, 0);
     if (index > -1) {
-      this.localStorageData.queries.splice(index, 1);
+      pair.value.splice(index, 1);
     }
 
     this.saveLocalStorage()
@@ -254,21 +249,21 @@ export class ApiService {
   }
 
 
-   /***
- * Auto Authorizing POST request
- */
-private async Post(url: string, body: any) {
+  /***
+* Auto Authorizing POST request
+*/
+  private async Post(url: string, body: any) {
 
-  let headers = new HttpHeaders();
-  let response = await this.http.post(url, body, {  observe: 'response' }).toPromise();
+    let headers = new HttpHeaders();
+    let response = await this.http.post(url, body, { observe: 'response' }).toPromise();
 
-  if (response.status == 401) {
-    this.router.navigate(['/login'])
+    if (response.status == 401) {
+      this.router.navigate(['/login'])
+    }
+
+    return response
+
   }
-
-  return response
-
-}
 
 
   /***
@@ -297,7 +292,7 @@ private async Post(url: string, body: any) {
 
   private async Get(url: string) {
 
-   
+
     let response = await this.http.get(url, { observe: 'response' }).toPromise();
 
     if (response.status == 401) {
@@ -437,7 +432,7 @@ export interface KVPair {
   value: string
 }
 
-export interface KVQuery{
+export interface KVQuery {
   key: string
   value: Array<QueryRequest>
 }
