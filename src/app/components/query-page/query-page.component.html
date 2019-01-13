@@ -57,7 +57,7 @@
     <button class="ml-3" (click)="onSubmit()" [disabled]="form.invalid || querrying" mat-raised-button color="primary"
       type="submit">Send
       Query</button>
-      <button class="ml-3" (click)="addToDashboard()" [disabled]="form.invalid || querrying" mat-raised-button color="primary"
+      <button class="ml-3" *ngIf="api.loggedIn()" (click)="addToDashboard()" [disabled]="form.invalid || querrying" mat-raised-button color="primary"
       type="submit">Add to dashboard</button>
     <br />
     <mat-spinner class="mt-5" *ngIf="querrying || !form"></mat-spinner>

@@ -66,15 +66,6 @@ export class ApiService {
     this.localStorageData = JSON.parse(localStorage.getItem("wetr"))
 
 
-    if (this.localStorageData.token == null) {
-      console.log("No token found! Requesting login.")
-      this.router.navigate(['/login'])
-      return;
-    } else {
-
-
-    }
-
   }
 
   private async loadStaticData() {
@@ -86,9 +77,9 @@ export class ApiService {
 
     try {
       /* Load Data */
-      this.stationTypes = <Array<StationType>>await this.JwtGet(apiString + "/data/stationtypes")
-      this.communities = <Array<Community>>await this.JwtGet(apiString + "/data/communities")
-      this.measurementTypes = <Array<MeasurementType>>await this.JwtGet(apiString + "/data/measurementtypes")
+      this.stationTypes = <Array<StationType>>await this.Get(apiString + "/data/stationtypes")
+      this.communities = <Array<Community>>await this.Get(apiString + "/data/communities")
+      this.measurementTypes = <Array<MeasurementType>>await this.Get(apiString + "/data/measurementtypes")
     } catch (error) {
       this.router.navigate(['/login'])
     }
@@ -133,9 +124,16 @@ export class ApiService {
     return this.measurementTypes
   }
 
+  public loggedIn() : boolean{
+    return this.localStorageData.token != null
+  } 
 
-
-
+  public logout(){
+    this.localStorageData.token = null
+    this.localStorageData.email = null
+    this.saveLocalStorage()
+    this.router.navigate(["/login"])
+  }
 
 
   public addQueryToDashboard(query: QueryRequest) {
@@ -155,6 +153,13 @@ export class ApiService {
   }
 
   public getDashboardQueries() {
+
+    /* Only logged in users can view dashboard */
+    if(this.localStorageData.token == null){
+      this.router.navigate(["/login"])
+      return []
+    }
+
     let pair = this.localStorageData.queries.find(pair => pair.key == this.localStorageData.email)
     if(pair == undefined)
       return []
@@ -248,6 +253,24 @@ export class ApiService {
 
   }
 
+
+   /***
+ * Auto Authorizing POST request
+ */
+private async Post(url: string, body: any) {
+
+  let headers = new HttpHeaders();
+  let response = await this.http.post(url, body, {  observe: 'response' }).toPromise();
+
+  if (response.status == 401) {
+    this.router.navigate(['/login'])
+  }
+
+  return response
+
+}
+
+
   /***
    * Auto Authorizing GET request
    */
@@ -262,6 +285,20 @@ export class ApiService {
     let headers = new HttpHeaders();
     headers = headers.append("Authorization", this.localStorageData.token);
     let response = await this.http.get(url, { headers: headers, observe: 'response' }).toPromise();
+
+    if (response.status == 401) {
+      this.router.navigate(['/login'])
+      throw new Error();
+    }
+
+    return response.body
+
+  }
+
+  private async Get(url: string) {
+
+   
+    let response = await this.http.get(url, { observe: 'response' }).toPromise();
 
     if (response.status == 401) {
       this.router.navigate(['/login'])
@@ -328,7 +365,7 @@ export class ApiService {
 
     let response
     try {
-      response = await this.JwtPost(apiString + "/measurements/query", query)
+      response = await this.Post(apiString + "/measurements/query", query)
 
     } catch (error) {
       return error.error
@@ -356,7 +393,7 @@ export class ApiService {
   public async getStation(id: number) {
     let response;
     try {
-      response = <Station>await this.JwtGet(apiString + "/stations/" + id)
+      response = <Station>await this.Get(apiString + "/stations/" + id)
     } catch (error) {
       this.router.navigate(['/login'])
       return null
@@ -384,7 +421,7 @@ export class ApiService {
 
     let response;
     try {
-      response = <Array<Station>>await this.JwtGet(apiString + "/stations/community/" + communityId)
+      response = <Array<Station>>await this.Get(apiString + "/stations/community/" + communityId)
     } catch (error) {
       this.router.navigate(['/login'])
       return []

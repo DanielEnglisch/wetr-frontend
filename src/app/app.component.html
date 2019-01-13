@@ -8,9 +8,11 @@
 
 <nav class="navbar navbar-dark bg-dark">
   <form class="form-inline">
-    <a class="btn btn-sm btn-outline-light mr-3" [routerLink]="['/dashboard']">Dashboard</a>
     <a class="btn btn-sm btn-outline-light mr-3" [routerLink]="['/search']">Search</a>
-    <a class="btn btn-sm btn-outline-light" [routerLink]="['/']">My Stations</a>
+    <a *ngIf="api.loggedIn()"class="btn btn-sm btn-outline-light mr-3" [routerLink]="['/dashboard']">Dashboard</a>
+    <a *ngIf="api.loggedIn()"class="btn btn-sm btn-outline-light mr-3" [routerLink]="['/']">My Stations</a>
+    <button *ngIf="api.loggedIn()" (click)="api.logout()" class="btn btn-sm btn-outline-light mr-3">Logout</button>
+    <a *ngIf="!api.loggedIn()" class="btn btn-sm btn-outline-light mr-3" [routerLink]="['/login']">Login</a>
 
   </form>
 </nav>
