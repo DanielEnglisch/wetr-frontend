@@ -139,17 +139,34 @@ export class ApiService {
 
 
   public addQueryToDashboard(query: QueryRequest) {
-    this.localStorageData.queries.push(query)
+    
+    /* If there is no query entry */
+    let entry = this.localStorageData.queries.find(pair => pair.key == this.localStorageData.email)
+    if(entry == undefined){
+      this.localStorageData.queries.push({
+        key: this.localStorageData.email,
+        value: [query]
+      })
+    }else{
+      entry.value.push(query)
+    }
+
     this.saveLocalStorage()
   }
 
   public getDashboardQueries() {
-    return this.localStorageData.queries
+    let pair = this.localStorageData.queries.find(pair => pair.key == this.localStorageData.email)
+    if(pair == undefined)
+      return []
+    return pair.value
   }
 
   public removeQueryToDashboard(query: QueryRequest) {
-
-    const index = this.localStorageData.queries.indexOf(query, 0);
+    let pair = this.localStorageData.queries.find(pair => pair.key == this.localStorageData.email)
+    if(pair == undefined)
+      return
+    
+    const index = pair.value.indexOf(query, 0);
     if (index > -1) {
       this.localStorageData.queries.splice(index, 1);
     }
@@ -383,11 +400,15 @@ export interface KVPair {
   value: string
 }
 
+export interface KVQuery{
+  key: string
+  value: Array<QueryRequest>
+}
 
 export interface WetrLocalStorageData {
 
   email: string
   token: string
-  queries: Array<QueryRequest>
+  queries: Array<KVQuery>
 
 }
