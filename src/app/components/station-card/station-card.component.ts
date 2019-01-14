@@ -11,6 +11,7 @@ import { FlashMessagesService } from 'angular2-flash-messages';
 export class StationCardComponent implements OnInit {
 
   @Input("station") station : Station
+  @Input("hideDetails") hideDetails : boolean = false
   @Input("detailsOnly") detailsOnly : boolean
   @Output() refreshRequired = new EventEmitter<void>();
 

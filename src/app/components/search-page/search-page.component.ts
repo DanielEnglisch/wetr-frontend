@@ -22,6 +22,8 @@ export class SearchPageComponent implements OnInit {
   communities : Array<Community>
   stations : Array<Station> = []
   
+  hideDetails : boolean = false
+
   filteredCommunities: Observable<Community[]>;
 
   async ngOnInit() {

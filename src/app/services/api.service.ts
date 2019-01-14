@@ -180,6 +180,8 @@ export class ApiService {
 
   public async login(request: LoginRequest) {
 
+    this.logout()
+
     let response: HttpResponse<object>
 
     try {

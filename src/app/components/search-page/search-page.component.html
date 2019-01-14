@@ -1,5 +1,6 @@
 <div class="container col-12">
 
+
   <h1 class="mt-5 mb-5">Search stations:</h1>
 
   <form *ngIf="form" [formGroup]="form">
@@ -15,16 +16,26 @@
   </form>
 
 
-  <h4 class="mt-5 mb-5">Stations:</h4>
-
-  <div class="container col-12">
-
-    <mat-spinner class="mt-5" *ngIf="loading"></mat-spinner>
-    <p *ngIf="stations?.length == 0 && !loading">There are no stations.</p>
-    <wetr-station-card [detailsOnly]="true" *ngFor="let station of stations" [station]="station"></wetr-station-card>
 
 
+  <div class="row col-12 mb-5 mt-5" *ngIf="stations">
+    <div class="col-10">
+      <h4>Stations:</h4>
+    </div>
+    <div class="col-2">
+      <p>Hide Details: <mat-checkbox [(ngModel)]="hideDetails" [ngModelOptions]="{standalone: true}"></mat-checkbox></p>
+    </div>
   </div>
 
 
 </div>
+
+<div class="container col-12">
+
+  <mat-spinner class="mt-5" *ngIf="loading"></mat-spinner>
+  <p *ngIf="stations?.length == 0 && !loading">There are no stations.</p>
+  <wetr-station-card [hideDetails]="hideDetails" [detailsOnly]="true" *ngFor="let station of stations" [station]="station"></wetr-station-card>
+
+
+</div>
+
