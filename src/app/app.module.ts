@@ -19,8 +19,7 @@ import { SearchPageComponent } from './components/search-page/search-page.compon
 import { QueryPageComponent } from './components/query-page/query-page.component';
 import { DashboardPageComponent } from './components/dashboard-page/dashboard-page.component';
 import { DashboardCardComponent } from './components/dashboard-card/dashboard-card.component';
-
-
+import { OwlDateTimeModule, OwlNativeDateTimeModule } from 'ng-pick-datetime';
 
 @NgModule({
   declarations: [
@@ -41,11 +40,13 @@ import { DashboardCardComponent } from './components/dashboard-card/dashboard-ca
     HttpClientModule,
     AppRoutingModule,
     BrowserAnimationsModule,
+    OwlDateTimeModule, 
+    OwlNativeDateTimeModule,
     MaterialModule,
     ReactiveFormsModule,
     FormsModule,
     FlashMessagesModule.forRoot(),
-    ChartModule 
+    ChartModule,
   ],
   providers: [ApiService],
   bootstrap: [AppComponent]

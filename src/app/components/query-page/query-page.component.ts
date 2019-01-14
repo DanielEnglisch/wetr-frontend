@@ -7,6 +7,7 @@ import { Station } from 'src/app/services/DTOs/station';
 import { MeasurementType } from 'src/app/services/DTOs/measurementType';
 import { QueryRequest } from 'src/app/services/requests/query.request';
 import { Chart } from 'angular-highcharts';
+import { MeasurementRequest } from 'src/app/services/requests/meassurement.request';
 
 @Component({
   selector: 'wetr-query-page',
@@ -30,6 +31,7 @@ export class QueryPageComponent implements OnInit {
   measurementTypes : Array<MeasurementType> = []
 
   form: FormGroup;
+  measurementForm : FormGroup;
   station : Station = { ... new Station(), StationId: -1}
 
   constructor(private activeRoute: ActivatedRoute, private api : ApiService, private router: Router, private formBuilder: FormBuilder, private flash : FlashMessagesService) {}
@@ -56,6 +58,12 @@ export class QueryPageComponent implements OnInit {
 
     });
 
+    this.measurementForm = this.formBuilder.group({
+      timestamp: [null, [Validators.required]],
+      measurementType: [null, [Validators.required]],
+      value: [null, [Validators.required,  Validators.pattern(/^-?\d+(\.\d+)?$/)]]
+    });
+
    Object.keys(this.form.controls).forEach(field => {
     const control = this.form.get(field); 
     control.markAsTouched({ onlySelf: true });
@@ -65,6 +73,42 @@ export class QueryPageComponent implements OnInit {
   }
 
   communityName : string  = "?"
+
+  getUnitForMeasurementId(id : number) : number{
+    let map : Array<number> = []
+    map[1] = 4
+    map[2] = 2
+    map[3] = 4
+    map[4] = 6
+    map[5] = 1
+    map[6] = 7
+
+    return map[id]
+  }
+
+  
+
+  async addMeasurement(){
+
+    
+    let data : MeasurementRequest = {
+      MeasurementId: 0,
+      MeasurementTypeId: +this.measurementForm.get("measurementType").value,
+      Value: +this.measurementForm.get("value").value,
+      StationId: this.station.StationId,
+      TimeStamp: this.measurementForm.get("timestamp").value,
+      UnitId: this.getUnitForMeasurementId(+this.measurementForm.get("measurementType").value)
+    }
+
+    let res = await this.api.addMeasurement(data)
+
+    if(res){
+      this.flash.show("Measurement has been added to this station.",  { cssClass: 'alert-success', timeout: 4000 })
+    }else{
+      this.flash.show("Measurement couldn't be added!",  { cssClass: 'alert-danger', timeout: 4000 })
+    }
+
+  }
 
   async addToDashboard(){
 

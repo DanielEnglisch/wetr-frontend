@@ -8,6 +8,7 @@ import { StationType } from './DTOs/stationtype';
 import { Community } from './DTOs/community';
 import { MeasurementType } from './DTOs/measurementType';
 import { QueryRequest } from './requests/query.request';
+import { MeasurementRequest } from './requests/meassurement.request';
 
 
 const apiString: string = "http://localhost:5000/v1"
@@ -139,13 +140,13 @@ export class ApiService {
         value: [query]
       })
     } else {
-        entry.value.push(query)
+      entry.value.push(query)
     }
 
     this.saveLocalStorage()
   }
 
- 
+
 
   public getDashboardQueries() {
 
@@ -202,6 +203,20 @@ export class ApiService {
 
     return true
 
+  }
+
+
+  public async addMeasurement(request: MeasurementRequest) {
+    let response
+    try {
+      response = await this.JwtPost(apiString + "/measurements", request)
+
+    } catch (error) {
+      return false
+
+    }
+
+    return true
   }
 
   /***
