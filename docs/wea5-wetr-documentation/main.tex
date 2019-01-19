@@ -117,13 +117,15 @@ Stefan \textsc{Nadschläger} % Supervisor's Name
 
 \section{Inbetriebnahme}
 
-Um das Wetr-Frontend in Betrieb zu nehmen, muss die aktuellste Version von GitHub\footnote{https://github.com/DanielEnglisch/wetr-frontend} heruntergeladen werden. Um die Applikation zu bauen und bereitzustellen muss im Projektverzeichnis der Befehl \textit{ng server --port 80} ausgeführt werden. Hierfür müssen zuvor folgende Pakete installiert werden:
+Um das Wetr-Frontend in Betrieb zu nehmen, muss die aktuellste Version von GitHub\footnote{https://github.com/DanielEnglisch/wetr-frontend} heruntergeladen werden. Hierfür müssen zuvor folgende Pakete installiert werden:
 \begin{itemize}
     \item Yarn\footnote{https://yarnpkg.com/en/docs/install}
     \item windows-build-tools (\textit{yarn add g windows-build-tools})
     \item karma-cli (\textit{yarn add g karma-cli})
     \item angular-cli (\textit{yarn add g @angular/cli@6.1.3})
 \end{itemize}
+
+Natürlich müssen die in der \textit{package.json} Datei spezifizierten Pakete installiert werden mit \textit{yarn install --check-files}.  Um die Applikation zu bauen und bereitzustellen muss im Projektverzeichnis der Befehl \textit{ng server --port 80} ausgeführt werden.\\
 
 Danach kann die Applikation unter \textit{http://localhost/} aufgerufen werden.
 Beachten Sie, dass für die fehlerfreie Verwendung die Wetr-RestAPI unter dem Port $5000$ bereits laufen muss. Falls diese API unter einer anderen \textit{Host:Port}-Kombination erreichbar ist, kann dies in der Datei \textit{src/app/services/api.servive.ts} bei der Konstanten 'apiString' angepasst werden.
