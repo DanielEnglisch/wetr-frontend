@@ -20,6 +20,7 @@ import { QueryPageComponent } from './components/query-page/query-page.component
 import { DashboardPageComponent } from './components/dashboard-page/dashboard-page.component';
 import { DashboardCardComponent } from './components/dashboard-card/dashboard-card.component';
 import { OwlDateTimeModule, OwlNativeDateTimeModule } from 'ng-pick-datetime';
+import { SettingsComponent } from './components/settings/settings.component';
 
 @NgModule({
   declarations: [
@@ -33,6 +34,7 @@ import { OwlDateTimeModule, OwlNativeDateTimeModule } from 'ng-pick-datetime';
     QueryPageComponent,
     DashboardPageComponent,
     DashboardCardComponent,
+    SettingsComponent,
 
   ],
   imports: [

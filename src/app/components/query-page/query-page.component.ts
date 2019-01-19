@@ -8,6 +8,8 @@ import { MeasurementType } from 'src/app/services/DTOs/measurementType';
 import { QueryRequest } from 'src/app/services/requests/query.request';
 import { Chart } from 'angular-highcharts';
 import { MeasurementRequest } from 'src/app/services/requests/meassurement.request';
+import { SettingsService } from 'src/app/services/settings.service';
+import { fdatasync } from 'fs';
 
 @Component({
   selector: 'wetr-query-page',
@@ -34,7 +36,7 @@ export class QueryPageComponent implements OnInit {
   measurementForm : FormGroup;
   station : Station = { ... new Station(), StationId: -1}
 
-  constructor(private activeRoute: ActivatedRoute, private api : ApiService, private router: Router, private formBuilder: FormBuilder, private flash : FlashMessagesService) {}
+  constructor(private activeRoute: ActivatedRoute, private api : ApiService, private router: Router, private formBuilder: FormBuilder, private flash : FlashMessagesService, private settingsService : SettingsService) {}
   
 
   async ngOnInit() {
@@ -170,6 +172,11 @@ export class QueryPageComponent implements OnInit {
     let response =<Array<number>> await this.api.queryStation(data)
 
     let groupingText =  this.api.groupingTypes.find(g => g.key == data.GroupingTypeId).value
+    let useFahrenheit = this.settingsService.loadSettings()['useFahrenheit']
+
+    /* Transform temperature to fahrenheit */
+    if(data.MeasurementTypeId == 1 && useFahrenheit)
+      response = response.map(val => val*(9/5)+32)
 
     if(response.length > 0){
       this.chart = new Chart({
@@ -198,6 +205,8 @@ export class QueryPageComponent implements OnInit {
       });
       
       this.dataSource = []
+
+
 
       var i = 0
       response.forEach(val => {

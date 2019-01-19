@@ -11,6 +11,7 @@ import { FlashMessagesService } from 'angular2-flash-messages';
 })
 export class HomeComponent implements OnInit {
 
+  hideDetails : boolean = false
   stations : Array<Station>
 
   constructor(private api : ApiService, private flash : FlashMessagesService) { }

@@ -7,6 +7,7 @@ import { AddStationComponent } from './components/add-station/add-station.compon
 import { SearchPageComponent } from './components/search-page/search-page.component';
 import { DashboardPageComponent } from './components/dashboard-page/dashboard-page.component';
 import { QueryPageComponent } from './components/query-page/query-page.component';
+import { SettingsComponent } from './components/settings/settings.component';
 
 
 const routes: Routes = [
@@ -17,6 +18,8 @@ const routes: Routes = [
   { path: "search", component: SearchPageComponent},
   { path: "dashboard", component: DashboardPageComponent},
   { path: "query/:id", component: QueryPageComponent},
+  { path: "settings", component: SettingsComponent},
+
 ];
 
 @NgModule({
@@ -25,4 +28,4 @@ const routes: Routes = [
 })
 
 export class AppRoutingModule { }
-export const routingComponents = [LoginComponent, HomeComponent, EditStationComponent, AddStationComponent,SearchPageComponent,DashboardPageComponent, QueryPageComponent]
+export const routingComponents = [LoginComponent, HomeComponent, EditStationComponent, AddStationComponent,SearchPageComponent,DashboardPageComponent, QueryPageComponent, SettingsComponent]

@@ -4,6 +4,7 @@ import { Chart } from 'angular-highcharts';
 import { ApiService } from 'src/app/services/api.service';
 import { MeasurementType } from 'src/app/services/DTOs/measurementType';
 import { Station } from 'src/app/services/DTOs/station';
+import { SettingsService } from 'src/app/services/settings.service';
 
 @Component({
   selector: 'wetr-dashboard-card',
@@ -21,7 +22,7 @@ export class DashboardCardComponent implements OnInit {
   station : Station = new Station
   description:string = "?"
 
-  constructor(private api : ApiService) { }
+  constructor(private api : ApiService, private settingsService : SettingsService) { }
 
   async ngOnInit() {
 
@@ -53,6 +54,12 @@ export class DashboardCardComponent implements OnInit {
 
     let groupingText =  this.api.groupingTypes.find(g => g.key == this.query.GroupingTypeId).value
     let measurementText = this.measurementTypes.find(g => g.MeasurementTypeId == this.query.MeasurementTypeId).Name
+
+    let useFahrenheit = this.settingsService.loadSettings()['useFahrenheit']
+
+    /* Transform temperature to fahrenheit */
+    if(this.query.MeasurementTypeId == 1 && useFahrenheit)
+    data = data.map(val => val*(9/5)+32)
 
     if(data.length > 0){
       this.chart = new Chart({

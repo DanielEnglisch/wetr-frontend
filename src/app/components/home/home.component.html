@@ -3,6 +3,9 @@
     <h1 class="">My stations </h1>
 
   </div>
+  <div class="col-2">
+    <p>Hide Details: <mat-checkbox [(ngModel)]="hideDetails" [ngModelOptions]="{standalone: true}"></mat-checkbox></p>
+  </div>
   <a class="btn col-1" [routerLink]="['/add']">
     <i style="background-color:green;color:white;" class="fa fa-plus p-2"></i>
   </a>
@@ -19,7 +22,7 @@
   <p *ngIf="stations?.length == 0">You don't have any station!</p>
 
   <!-- Station Card -->
-  <wetr-station-card *ngFor="let station of stations" [station]="station" (refreshRequired)="refreshStations()"></wetr-station-card>
+  <wetr-station-card *ngFor="let station of stations" [hideDetails]="hideDetails" [station]="station" (refreshRequired)="refreshStations()"></wetr-station-card>
   <!-- End Station Card -->
 
 </div>
