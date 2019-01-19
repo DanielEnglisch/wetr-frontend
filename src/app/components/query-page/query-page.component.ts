@@ -9,7 +9,7 @@ import { QueryRequest } from 'src/app/services/requests/query.request';
 import { Chart } from 'angular-highcharts';
 import { MeasurementRequest } from 'src/app/services/requests/meassurement.request';
 import { SettingsService } from 'src/app/services/settings.service';
-import { fdatasync } from 'fs';
+
 
 @Component({
   selector: 'wetr-query-page',
