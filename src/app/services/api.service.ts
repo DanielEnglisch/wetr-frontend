@@ -122,6 +122,10 @@ export class ApiService {
     return this.localStorageData.token != null
   }
 
+  public getEmail(): string {
+    return this.localStorageData.email
+  }
+
   public logout() {
     this.localStorageData.token = null
     this.localStorageData.email = null
