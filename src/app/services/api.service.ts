@@ -10,21 +10,40 @@ import { MeasurementType } from './DTOs/measurementType';
 import { QueryRequest } from './requests/query.request';
 import { MeasurementRequest } from './requests/meassurement.request';
 
-
+/* Change for a different API-Endpoint */
 const apiString: string = "http://localhost:5000/v1"
+
+
+/* Interfaces */
+
+export interface KVPair {
+  key: number
+  value: string
+}
+
+export interface KVQuery {
+  key: string
+  value: Array<QueryRequest>
+}
+
+export interface WetrLocalStorageData {
+
+  email: string
+  token: string
+  queries: Array<KVQuery>
+
+}
 
 @Injectable({
   providedIn: 'root'
 })
-
 export class ApiService {
 
   private staticDataLoaded: boolean = false
-
-  /* Static data: */
-  stationTypes: Array<StationType>
-  communities: Array<Community>
-  measurementTypes: Array<MeasurementType>
+  private stationTypes: Array<StationType>
+  private communities: Array<Community>
+  private measurementTypes: Array<MeasurementType>
+  private localStorageData: WetrLocalStorageData
 
   public reductionTypes: Array<KVPair> = [
     { key: 0, value: "Average" },
@@ -39,11 +58,7 @@ export class ApiService {
     { key: 1, value: "Week" },
     { key: 2, value: "Month" },
     { key: 3, value: "Year" },
-
   ]
-
-
-  localStorageData: WetrLocalStorageData
 
   constructor(private http: HttpClient, private router: Router) {
 
@@ -57,17 +72,18 @@ export class ApiService {
       console.log("LocalStorage data has been initialized for the first time!")
     }
 
-    this.localStorageData = JSON.parse(localStorage.getItem("wetr"))
-
-
+    this.loadLocalStorage()
   }
+
+  /**************************************************/
+  /*# Static Data #*/
+  /**************************************************/
 
   private async loadStaticData() {
 
     if (this.staticDataLoaded) {
       return;
     }
-
 
     try {
       /* Load Data */
@@ -78,9 +94,7 @@ export class ApiService {
       this.router.navigate(['/login'])
     }
 
-
     /* Sorting communities */
-
     this.communities.sort(function (a, b) {
       if (a.Name < b.Name) { return -1; }
       if (a.Name > b.Name) { return 1; }
@@ -118,6 +132,36 @@ export class ApiService {
     return this.measurementTypes
   }
 
+  /**************************************************/
+  /*# Login #*/
+  /**************************************************/
+
+  public async login(request: LoginRequest) {
+
+    this.logout()
+
+    let response: HttpResponse<object>
+
+    try {
+      response = await this.http.post(apiString + "/auth/", request, { observe: 'response' }).toPromise()
+    } catch (error) {
+      return false
+    }
+
+    let payload = <TokenResponse>response.body
+    this.localStorageData.token = payload.Token
+    this.localStorageData.email = request.Email
+
+    this.saveLocalStorage()
+
+
+    /* Load data in login */
+    await this.loadStaticData()
+
+    return true
+
+  }
+
   public loggedIn(): boolean {
     return this.localStorageData.token != null
   }
@@ -133,6 +177,9 @@ export class ApiService {
     this.router.navigate(["/login"])
   }
 
+  /**************************************************/
+  /*# Dashboard #*/
+  /**************************************************/
 
   public addQueryToDashboard(query: QueryRequest) {
 
@@ -149,7 +196,6 @@ export class ApiService {
 
     this.saveLocalStorage()
   }
-
 
 
   public getDashboardQueries() {
@@ -179,53 +225,23 @@ export class ApiService {
     this.saveLocalStorage()
   }
 
-  public saveLocalStorage() {
+  /**************************************************/
+  /*# Local Storage #*/
+  /**************************************************/
+
+
+  private saveLocalStorage() {
     localStorage.setItem("wetr", JSON.stringify(this.localStorageData))
   }
 
-  public async login(request: LoginRequest) {
-
-    this.logout()
-
-    let response: HttpResponse<object>
-
-    try {
-      response = await this.http.post(apiString + "/auth/", request, { observe: 'response' }).toPromise()
-    } catch (error) {
-      return false
-    }
-
-    let payload = <TokenResponse>response.body
-    this.localStorageData.token = payload.Token
-    this.localStorageData.email = request.Email
-
-    this.saveLocalStorage()
-
-
-    /* Load data in login */
-    await this.loadStaticData()
-
-    return true
-
+  private loadLocalStorage() {
+    this.localStorageData = JSON.parse(localStorage.getItem("wetr"))
   }
+   
+  /**************************************************/
+  /*# Http Communication #*/
+  /**************************************************/
 
-
-  public async addMeasurement(request: MeasurementRequest) {
-    let response
-    try {
-      response = await this.JwtPost(apiString + "/measurements", request)
-
-    } catch (error) {
-      return false
-
-    }
-
-    return true
-  }
-
-  /***
-   * Auto Authorizing PUT request
-   */
   private async JwtPut(url: string, body: any) {
 
     /* If there is no token, login */
@@ -246,9 +262,7 @@ export class ApiService {
 
   }
 
-  /***
- * Auto Authorizing POST request
- */
+ 
   private async JwtPost(url: string, body: any) {
 
     /* If there is no token, login */
@@ -270,9 +284,6 @@ export class ApiService {
   }
 
 
-  /***
-* Auto Authorizing POST request
-*/
   private async Post(url: string, body: any) {
 
     let headers = new HttpHeaders();
@@ -286,10 +297,6 @@ export class ApiService {
 
   }
 
-
-  /***
-   * Auto Authorizing GET request
-   */
   private async JwtGet(url: string) {
 
     /* If there is no token, login */
@@ -313,7 +320,6 @@ export class ApiService {
 
   private async Get(url: string) {
 
-
     let response = await this.http.get(url, { observe: 'response' }).toPromise();
 
     if (response.status == 401) {
@@ -325,9 +331,6 @@ export class ApiService {
 
   }
 
-  /***
-   * Auto Authorizing DELETE request
-   */
   private async JwtDelete(url: string) {
 
     /* If there is no token, login */
@@ -347,6 +350,10 @@ export class ApiService {
     return response.status
 
   }
+
+  /**************************************************/
+  /*# Stations #*/
+  /**************************************************/
 
   public async editStatoin(station: Station) {
     let response
@@ -430,9 +437,6 @@ export class ApiService {
 
   }
 
-
-
-
   public async getStationsForCommunity(communityId: number) {
 
     let response;
@@ -446,22 +450,19 @@ export class ApiService {
 
   }
 
-}
+  public async addMeasurement(request: MeasurementRequest) {
+    let response : HttpResponse<Object>
+    try {
+      response = await this.JwtPost(apiString + "/measurements", request)
 
-export interface KVPair {
-  key: number
-  value: string
-}
+    } catch (error) {
+      return false
 
-export interface KVQuery {
-  key: string
-  value: Array<QueryRequest>
-}
+    }
 
-export interface WetrLocalStorageData {
+    return true
+  }
 
-  email: string
-  token: string
-  queries: Array<KVQuery>
 
 }
+
